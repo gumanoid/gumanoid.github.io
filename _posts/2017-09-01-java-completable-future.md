@@ -1,3 +1,10 @@
+---
+layout: post
+title:  "CompletableFuture"
+date:   2017-09-01 23:59:59 +0400
+categories: jekyll update
+---
+
 Уже не помню, при каких обстоятельствах я впервые заинтересовался классом java.util.concurrent.CompletableFuture. Помню свою первую реакцию.
 
 TODO Гифка. Скриншот Идеи с текстом 'new CompletableFuture()', нажимается точка, выпрыгивают десятки методов класса. Соединить с гифкой, где кто-нибудь открывает изнутри дома входную дверь, и в него вваливается сугроб.
@@ -29,6 +36,8 @@ CompletableFuture - это способ разделить два аспекта
             error.printStackTrace();
         }
     });
+
+
 
 :
 - создание экземпляра CompletableFuture
