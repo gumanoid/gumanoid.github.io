@@ -95,8 +95,32 @@ categories: jekyll update
 
     doUploadFile().thenCompose(__ -> doShowNotification());
 
-О том, почему `thenCompose`, а не `thenRun`, поговорим чуть позже, когда дойдём до схемы именования методов `CompletableFuture`.
+Почему `thenCompose`, а не `thenRun`? Пора поговорить о схеме именования методов `CompletableFuture`.
 
+Примерно половина методов именуется по схеме: `then`; затем `Accept`/`Apply`/`Compose`/`Run`; затем, опционально, `Async`. Что означает `Async`, мы уже разбирали выше - это указание, что шаг будет выполняться в отдельном потоке. `Accept`/`Apply`/`Compose`/`Run` выбирается исходя из того, что принимает на вход и что возвращает очередной шаг.
+
+`Run`: входного параметра у шага нет, возвращаемого значения тоже. Такое мы видели в примере выше:
+
+    whenFileUploaded.thenRun(() -> showNotification());
+
+`Accept`: есть входной параметр, возвращаемгого значения нет. Пример:
+
+    CompletableFuture<String> greeting = CompletableFuture.completedFuture("Hello world!");
+    greeting.thenAccept(helloWorld -> System.out.println(helloWorld));
+
+`Apply`: есть входной параметр и возвращаемое значение любого типа, кроме `CompletableFuture`:
+
+    CompletableFuture.completedFuture("Hello")
+                     .thenApply(part1 -> part1 + " world!")
+                     .thenAccept(greeting -> System.out.println(greeting));
+
+`Compose`: есть входной параметр и возвращаемое значение типа `CompletableFuture`:
+
+    CompletableFuture.completedFuture("Hello")
+                     .thenCompose(part1 -> CompletableFuture.completedFuture(part1 + " world!"))
+                     .thenAccept(greeting -> System.out.println(greeting));
+
+А как быть, если нет входного параметра, но есть возвращаемое значение? Прикинуться, что входной параметр есть, но не использовать его: `.thenApply(__ -> returnValueImmediately())` или `.thenCompose(__ -> returnValueLater())`.
 
 
 
