@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"> 
+<style>
+</style>
+</head>
+<body>
+  <label>Сумма кредита</label>
+  <div>
+    <input id="total" type="number" min="0" max="10000000" step="1000">
+  </div>
+  
+  <label>Первоначальный взнос</label>
+  <div>
+    <input id="init" type="number" min="0" max="10000000" step="1000">
+  </div>
+  
+  <label>Процентная ставка</label>
+  <div>
+    <input id="percentage" type="number" min="0" max="200" step="0.05">
+  </div>
+
+  <label>Срок в месяцах</label>
+  <div>
+    <input id="time" type="number" min="1" max="600">
+  </div>
+
+  <label>Тело кредита</label>
+  <div>
+  	<span id="body"></span>
+  </div>
+
+  <label>Ежемесячный <a href="https://ru.wikipedia.org/wiki/%D0%90%D0%BD%D0%BD%D1%83%D0%B8%D1%82%D0%B5%D1%82#%D0%91%D0%B0%D0%BD%D0%BA%D0%BE%D0%B2%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D1%81%D1%87%D1%91%D1%82_%D0%B0%D0%BD%D0%BD%D1%83%D0%B8%D1%82%D0%B5%D1%82%D0%B0" target="_blank">аннуитетный</a> платёж</label>
+  <div>
+  	<span id="monthly"></span>
+  </div>
+
+  <label>Переплата</label>
+  <div>
+  	<span id="overpayment"></span>
+  </div>
+
+  <script type="text/javascript">
+    let onReady = () => {
+      let model = {
+        total: 1000000,
+        init: 100000,
+        percentage: 10.0,
+        time: 120,
+
+        body: 0,
+        monthly: 0,
+        overpayment: 0,
+        error: null
+      }
+
+      let view = {
+        total: document.querySelector('#total'),
+        init: document.querySelector('#init'),
+        percentage: document.querySelector('#percentage'),
+        time: document.querySelector('#time'),
+
+        body: document.querySelector('#body'),
+        monthly: document.querySelector('#monthly'),
+        overpayment: document.querySelector('#overpayment'),
+      }
+
+      let recalc = () => {
+        let S = model.total - model.init
+        if (S <= 0) {
+          error = 'Первоначальный взнос больше или равен сумме кредита'
+          return
+        }
+
+        model.body = S
+
+        let P = model.percentage / 1200.0
+        let T = model.time
+
+        let mp = S * P / (1 - Math.pow(1 + P, -T))
+
+        model.monthly = Math.round(mp * 100) / 100
+        model.overpayment = Math.round(model.monthly * T * 100) / 100 
+      }
+
+      let render = () => {
+        view.total.value = model.total
+        view.init.value = model.init
+        view.percentage.value = model.percentage
+        view.time.value = model.time
+        
+        view.body.innerText = model.body
+        view.monthly.innerText = model.monthly
+        view.overpayment.innerText = model.overpayment
+      }
+
+      let setModelKey = key => event => {
+        model[key] = event.target.value
+        recalc()
+        render()
+      }
+
+      view.total.onchange = setModelKey('total')
+      view.init.onchange = setModelKey('init')
+      view.percentage.onchange = setModelKey('percentage')
+      view.time.onchange = setModelKey('time')
+
+      recalc()
+      render()
+    }
+
+    document.addEventListener('DOMContentLoaded', onReady, false)
+  </script>
+</body>
+</html>
